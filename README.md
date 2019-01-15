@@ -50,6 +50,12 @@ Login with the shared **resvumedia dev** account
 #### 3 Deploy
 Build and then deploy the container.
 
+    yarn build
     heroku container:push web
     heroku container:release web
 
+### Local Development
+
+    yarn build
+    docker build -t mycontainer .
+    docker run mycontainer
