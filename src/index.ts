@@ -1,9 +1,11 @@
 import { Html2Pdf } from "./pdf-conversion";
+import { AddCors } from "./middleware";
 
 const express = require('express');
 
 const app = express();
 const bodyParser = require('body-parser');
+app.use(bodyParser({limit: '5mb'}));
 app.use(
   bodyParser.urlencoded({
     extended: true
@@ -14,7 +16,8 @@ app.use(bodyParser.json());
 
 // [START hello_world]
 // Say hello!
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+  await AddCors(req, res);
   res.status(200).send('Hello, world!');
 });
 app.use('/html2pdf', Html2Pdf);
