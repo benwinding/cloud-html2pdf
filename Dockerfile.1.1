@@ -1,0 +1,24 @@
+FROM debian:16.04
+
+RUN apt-get update
+RUN apt-get install -y wget tar
+
+WORKDIR /home
+RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz
+RUN ls -al
+RUN tar -xvf "./wkhtmltox-0.12.3_linux-generic-amd64.tar.xz"
+RUN cp wkhtmltox/bin/wk* /usr/local/bin/
+
+# confirm installation
+RUN node -v
+RUN npm -v
+RUN ls -al /usr/bin/
+
+# RUN echo "<h2>Hello World</h2>" | wkhtmltopdf --
+
+RUN npm i -g yarn
+COPY . .
+RUN yarn 
+#--production=true
+
+CMD node lib/index.js

@@ -16,8 +16,8 @@ app.use(bodyParser.json());
 
 // [START hello_world]
 // Say hello!
+app.use(AddCors);
 app.get('/', async (req, res) => {
-  await AddCors(req, res);
   res.status(200).send('Hello, world!');
 });
 app.use('/html2pdf', Html2Pdf);

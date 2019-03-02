@@ -1,11 +1,10 @@
-FROM rainabba/nodejs-8-wkhtmltopdf
-
+FROM surnet/alpine-node-wkhtmltopdf:8.11.3-0.12.5-full
 # confirm installation
-RUN wkhtmltopdf --version
-RUN npm --version
-RUN node --version
-# RUN ls -al /usr/bin/
+RUN node -v
+RUN npm -v
 
+RUN wkhtmltopdf --version
+RUN which wkhtmltopdf
 # RUN echo "<h2>Hello World</h2>" | wkhtmltopdf --
 
 RUN npm i -g yarn

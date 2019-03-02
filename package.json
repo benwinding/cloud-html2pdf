@@ -9,12 +9,11 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@sugo/wkhtmltopdf": "^1.0.2",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "html-pdf": "^2.2.0",
-    "phantomjs-prebuilt": "^2.1.16",
-    "uuid": "^3.3.2"
+    "wkhtmltopdf": "^0.3.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.4",
@@ -28,8 +27,5 @@
     "tslint": "~5.8.0",
     "typescript": "^3.2.2"
   },
-  "private": true,
-  "engines": {
-    "node": "8"
-  }
+  "private": true
 }
