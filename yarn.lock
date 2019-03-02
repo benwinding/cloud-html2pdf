@@ -1070,7 +1070,7 @@ is-retry-allowed@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/is-retry-allowed/-/is-retry-allowed-1.1.0.tgz#11a060568b67339444033d0125a61a20d564fb34"
 
-is-stream@^1.0.0, is-stream@^1.0.1, is-stream@^1.1.0:
+is-stream@^1.0.0, is-stream@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/is-stream/-/is-stream-1.1.0.tgz#12d4a3dd4e68e0b79ceb8dbc84173ae80d91ca44"
 
@@ -1804,11 +1804,6 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
-slang@>=0.2:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/slang/-/slang-0.3.0.tgz#13af75b4f0c018c6a8193d704f65b23be4fbabdc"
-  integrity sha1-E691tPDAGMaoGT1wT2WyO+T7q9w=
-
 snapdragon-node@^2.0.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/snapdragon-node/-/snapdragon-node-2.1.1.tgz#6c175f86ff14bdb0724563e8f3c1b021a286853b"
@@ -2158,14 +2153,6 @@ widest-line@^2.0.0:
   resolved "https://registry.yarnpkg.com/widest-line/-/widest-line-2.0.1.tgz#7438764730ec7ef4381ce4df82fb98a53142a3fc"
   dependencies:
     string-width "^2.1.1"
-
-wkhtmltopdf@^0.3.4:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/wkhtmltopdf/-/wkhtmltopdf-0.3.4.tgz#e2db542a7dc2248032bf136754b5cdd7cf2815f0"
-  integrity sha1-4ttUKn3CJIAyvxNnVLXN188oFfA=
-  dependencies:
-    is-stream "^1.0.1"
-    slang ">=0.2"
 
 wrap-ansi@^2.0.0:
   version "2.1.0"

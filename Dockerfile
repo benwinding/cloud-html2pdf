@@ -1,16 +1,16 @@
-FROM rainabba/nodejs-8-wkhtmltopdf
+#### Builder Container
+FROM rainabba/nodejs-8-wkhtmltopdf as builder
+RUN which wkhtmltopdf
 
+#### Runtime Container
+FROM node:8.11.1
+COPY --from=builder /usr/local/bin/wkhtmltopdf /bin/wkhtmltopdf
 # confirm installation
 RUN wkhtmltopdf --version
 RUN npm --version
 RUN node --version
-# RUN ls -al /usr/bin/
-
-# RUN echo "<h2>Hello World</h2>" | wkhtmltopdf --
-
+# install app
 RUN npm i -g yarn
 COPY . .
-RUN yarn 
-#--production=true
-
+RUN yarn --prod
 CMD node lib/index.js
