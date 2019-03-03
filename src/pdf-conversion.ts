@@ -21,7 +21,7 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
 
   try {
     console.log("pdf-generation: Begining pdf conversion");
-    const buffer = await wkhtmltopdf("http://www.google.com");
+    const buffer = await wkhtmltopdf(html);
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
