@@ -9,15 +9,15 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@sugo/wkhtmltopdf": "^1.0.2",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "nightmare": "^3.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.4",
     "@types/express": "^4.16.0",
-    "@types/html-pdf": "^2.1.2",
+    "@types/nightmare": "^2.10.4",
     "@types/node": "^11.9.6",
     "@types/tmp": "^0.0.33",
     "@types/uuid": "^3.4.4",
