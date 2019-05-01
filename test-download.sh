@@ -1,0 +1,1 @@
+curl -X POST localhost:8080/html2pdf -d "filename=test.pdf" -d "html=p" --output test.pdf

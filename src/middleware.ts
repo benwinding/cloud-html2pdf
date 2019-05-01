@@ -23,7 +23,7 @@ export function OptionRequestsAreOk(
 ) {
   if (req.method === 'OPTIONS') {
     console.warn("Recieved OPTIONS request sending OK')");
-    res.status(200).send('Options are OK');
+    res.status(200).send('Options are OK\n');
     return;
   }
   next();
@@ -46,11 +46,21 @@ export function PostRequestsOnly(
 export function HasBodyProp(bodyFieldName: string): RequestHandler {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.body[bodyFieldName]) {
-      const msg = 'Request is missing property in req.body: ' + bodyFieldName;
+      const msg = `Request is missing property "${bodyFieldName}" in req.body
+-> Recieved req.body: ${getSafeJson(req.body)}`;
       console.warn(msg);
       res.status(400).send(msg);
       return;
     }
     next();
   };
+}
+
+function getSafeJson(body) {
+  try {
+    const str = JSON.stringify(body, null, 2);
+    return str;
+  } catch (error) {
+    return '(Error Parsing JSON) body=' + body;
+  }
 }

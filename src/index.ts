@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 app.use(AddCors);
 app.get('/', async (req, res) => {
-  res.status(200).send('Hello, world!');
+  res.status(200).send('Hello, world!\n');
 });
 app.use('/html2pdf', Html2Pdf);
 
