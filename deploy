@@ -1,0 +1,3 @@
+yarn build
+cloud config set project resvuapps
+gcloud beta app deploy app.yaml

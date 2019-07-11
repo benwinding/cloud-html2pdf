@@ -57,5 +57,5 @@ Build and then deploy the container.
 ### Local Development
 
     yarn build
-    docker build -t mycontainer .
-    docker run mycontainer
+    docker build -t pdf .
+    docker run -p 8080:8080 pdf
