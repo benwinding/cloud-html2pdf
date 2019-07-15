@@ -37,8 +37,9 @@ ENV DEBUG=nightmare
 
 # install app
 RUN npm i -g yarn
-COPY . .
+COPY ./package.json ./package.json
 RUN yarn --prod
+COPY . .
 
 # Begin xvfb server and start node script
 CMD Xvfb -ac -screen scrn 1280x2000x24 :9.0 & node lib/index.js
