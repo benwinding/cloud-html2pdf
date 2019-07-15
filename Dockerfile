@@ -28,6 +28,9 @@ RUN apt-get install -y \
   gcc-multilib \
   g++-multilib
 
+RUN apt-get install -y \
+  ghostscript
+
 RUN npm --version
 RUN node --version
 

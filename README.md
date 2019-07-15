@@ -13,7 +13,8 @@ Below are the access details for each API endpoint
 POST "https://{HOST}/html2pdf"
 body = {
 	"html": "<html><div>Hello World</div></html>",
-	"filename": "hello_world.pdf"
+	"filename": "hello_world.pdf",
+	"imageResolution": "150"
 }
 ```
 

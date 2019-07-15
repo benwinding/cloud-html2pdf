@@ -30,7 +30,7 @@ function tryRemoveFile(filePath) {
 
 async function HandleHtml2Pdf(req: Request, res: Response) {
   // Get html string from query
-  const { html, filename } = req.body;
+  const { html, filename, imageResolution } = req.body;
 
   try {
     const Nightmare = require('nightmare');
@@ -42,16 +42,20 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
 
     const tempPdfPath = join(tmpdir(), uuidv1() + '.pdf');
     await nightmare.goto('file://' + tempHtmlPath).pdf(tempPdfPath);
+    const tempPdfCompressedPath = join(tmpdir(), uuidv1() + '.pdf');
+    await compressPdfFile(tempPdfPath, tempPdfCompressedPath, imageResolution);
     console.log('pdf-generation: saving tempPdfPath  file: ', tempPdfPath);
-    res.download(tempPdfPath, filename, async () => {
+    res.download(tempPdfCompressedPath, filename, async () => {
       tryRemoveFile(tempHtmlPath);
       tryRemoveFile(tempPdfPath);
+      tryRemoveFile(tempPdfCompressedPath);
     });
     // Ensure files are definitely removed after 2 minutes
     const timeOut = 2 * 60 * 1000;
     setTimeout(() => {
       tryRemoveFile(tempHtmlPath);
       tryRemoveFile(tempPdfPath);
+      tryRemoveFile(tempPdfCompressedPath);
     }, timeOut);
   } catch (e) {
     console.error('pdf-generation: An Error occurred when processing HTML', {
@@ -60,4 +64,15 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
     res.status(500);
     res.send(e);
   }
+}
+
+async function compressPdfFile(
+  inputPdfPath: string,
+  outputPdfFile: string,
+  inputResolution: string
+): Promise<void> {
+  const imageResolution = +inputResolution || 150;
+  const exec = util.promisify(require('child_process').exec);
+  const command = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -dColorImageResolution=${imageResolution} -q -o ${outputPdfFile} ${inputPdfPath}`;
+  await exec(command);
 }
