@@ -59,7 +59,7 @@ export function HasBodyProp(bodyFieldName: string): RequestHandler {
 function getSafeJson(body) {
   try {
     const str = JSON.stringify(body, null, 2);
-    return str;
+    return str.slice(0,200);
   } catch (error) {
     return '(Error Parsing JSON) body=' + body;
   }
