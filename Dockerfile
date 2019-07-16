@@ -28,6 +28,7 @@ RUN apt-get install -y \
   gcc-multilib \
   g++-multilib
 
+RUN apt-get update
 RUN apt-get install -y \
   ghostscript
 
