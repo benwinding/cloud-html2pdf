@@ -45,13 +45,18 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
     const tempPdfCompressedPath = join(tmpdir(), uuidv1() + '.pdf');
     await compressPdfFile(tempPdfPath, tempPdfCompressedPath, imageResolution);
     console.log('pdf-generation: saving tempPdfPath  file: ', tempPdfPath);
-    res.download(tempPdfCompressedPath, filename, async () => {
+    res.download(tempPdfCompressedPath, filename, async (err) => {
+      if (err) {
+        console.error('pdf-generation: error sending file:', err);
+        res.status(500);
+        res.send('pdf-generation: res.download() error sending file');
+      }
       tryRemoveFile(tempHtmlPath);
       tryRemoveFile(tempPdfPath);
       tryRemoveFile(tempPdfCompressedPath);
     });
-    // Ensure files are definitely removed after 2 minutes
-    const timeOut = 2 * 60 * 1000;
+    // Ensure files are definitely removed after 4 minutes
+    const timeOut = 4 * 60 * 1000;
     setTimeout(() => {
       tryRemoveFile(tempHtmlPath);
       tryRemoveFile(tempPdfPath);
