@@ -2,57 +2,63 @@ import {
   OptionRequestsAreOk,
   PostRequestsOnly,
   HasBodyProp
-} from "./middleware";
-import { Request, Response } from "express";
-import { writeFileSync, unlinkSync } from "fs";
-import { tmpdir } from "os";
-import { join } from "path";
-import uuidv1 = require("uuid/v1");
+} from './middleware';
+import { Request, Response } from 'express';
+import { writeFileSync, unlinkSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
+import uuidv1 = require('uuid/v1');
+const util = require('util');
 import * as fs from 'fs';
-
-const Nightmare = require("nightmare");
-const nightmare = Nightmare({ show: false });
+const writeFilePromise = util.promisify(fs.writeFile);
+const rmFilePromise = util.promisify(fs.unlink);
 
 export const Html2Pdf = [
   OptionRequestsAreOk,
   PostRequestsOnly,
-  HasBodyProp("html"),
-  HasBodyProp("filename"),
+  HasBodyProp('html'),
+  HasBodyProp('filename'),
   HandleHtml2Pdf
 ];
 
+function tryRemoveFile(filePath) {
+  console.log('pdf-generation: trying to remove file: ', filePath);
+  rmFilePromise(filePath).catch(e => {
+    // console.error('error removing file: ', e)
+  })
+}
+
 async function HandleHtml2Pdf(req: Request, res: Response) {
   // Get html string from query
-  const { html, filename } = req.body;
+  const { html, filename, imageResolution } = req.body;
 
   try {
-    console.log("pdf-generation: Begining pdf conversion");
-    const tempHtmlPath = join(tmpdir(), uuidv1() + ".html");
-    const tempPdfPath = join(tmpdir(), uuidv1() + ".pdf");
-    writeFileSync(tempHtmlPath, html);
-    console.log("pdf-generation: saving temp HtmlPath file: ", tempHtmlPath);
+    const Nightmare = require('nightmare');
+    const nightmare = Nightmare({ show: false });
+    console.log('pdf-generation: Begining pdf conversion');
+    const tempHtmlPath = join(tmpdir(), uuidv1() + '.html');
+    await writeFilePromise(tempHtmlPath, html);
+    console.log('pdf-generation: saving tempHtmlPath file: ', tempHtmlPath);
 
-    pingDownloadBegin(res, filename);
-    const ref = pingDownloadTimerStart(res);
-
-    setTimeout(async () => {
-      
-    await nightmare.goto("file://" + tempHtmlPath).pdf(tempPdfPath);
-    console.log("pdf-generation: saving temp PdfPath  file: ", tempPdfPath);
-
-    pingDownloadTimerStop(ref);
-
-    var filestream = fs.createReadStream(tempPdfPath);
-    filestream.pipe(res);
-    filestream.on('close', () => {
-      console.log('pdf-generation: removing file: ' + tempHtmlPath);
-      console.log('pdf-generation: removing file: ' + tempPdfPath);
-      unlinkSync(tempHtmlPath);
-      unlinkSync(tempPdfPath);
-    })
-  }, 5000);
-} catch (e) {
-    console.error("pdf-generation: An Error occurred when processing HTML", {
+    const tempPdfPath = join(tmpdir(), uuidv1() + '.pdf');
+    await nightmare.goto('file://' + tempHtmlPath).pdf(tempPdfPath);
+    const tempPdfCompressedPath = join(tmpdir(), uuidv1() + '.pdf');
+    await compressPdfFile(tempPdfPath, tempPdfCompressedPath, imageResolution);
+    console.log('pdf-generation: saving tempPdfPath  file: ', tempPdfPath);
+    res.download(tempPdfCompressedPath, filename, async () => {
+      tryRemoveFile(tempHtmlPath);
+      tryRemoveFile(tempPdfPath);
+      tryRemoveFile(tempPdfCompressedPath);
+    });
+    // Ensure files are definitely removed after 2 minutes
+    const timeOut = 2 * 60 * 1000;
+    setTimeout(() => {
+      tryRemoveFile(tempHtmlPath);
+      tryRemoveFile(tempPdfPath);
+      tryRemoveFile(tempPdfCompressedPath);
+    }, timeOut);
+  } catch (e) {
+    console.error('pdf-generation: An Error occurred when processing HTML', {
       e
     });
     res.status(500);
@@ -60,19 +66,13 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
   }
 }
 
-function pingDownloadBegin(res: Response, downloadFileName: string) {
-  res.writeHead(200, {
-    "Content-Type": "application/octet-stream",
-    "Content-Disposition": "attachment; filename=" + downloadFileName
-  });
-}
-function pingDownloadTimerStart(res: Response): NodeJS.Timeout {
-  const pinger = setInterval(() => {
-    res.write('\n');
-  }, 1000);
-  return pinger;
-}
-
-function pingDownloadTimerStop(timeout: NodeJS.Timeout) {
-  clearInterval(timeout);
+async function compressPdfFile(
+  inputPdfPath: string,
+  outputPdfFile: string,
+  inputResolution: string
+): Promise<void> {
+  const imageResolution = +inputResolution || 150;
+  const exec = util.promisify(require('child_process').exec);
+  const command = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -dColorImageResolution=${imageResolution} -q -o ${outputPdfFile} ${inputPdfPath}`;
+  await exec(command);
 }

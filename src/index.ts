@@ -15,9 +15,9 @@ app.use(bodyParser.json());
 
 app.use(AddCors);
 app.get('/', async (req, res) => {
-  res.status(200).send('Hello, world!\n');
+  res.status(200).send('PDF CONVERTER RUNNING');
 });
-app.use('/html2pdf', Html2Pdf);
+app.use('/pdf/generate', Html2Pdf);
 
 const server = app.listen(process.env.PORT || 8080, () => {
   const port = server.address().port;
