@@ -11,9 +11,10 @@ resources:
   memory_gb: 2
   disk_size_gb: 10
 network: {}
-health_check:
-  enable_health_check: True
-  check_interval_sec: 5
+readiness_check:
+  path: "/"
+  check_interval_sec: 30
   timeout_sec: 4
-  unhealthy_threshold: 2
-  healthy_threshold: 2
+  failure_threshold: 2
+  success_threshold: 2
+  app_start_timeout_sec: 300
