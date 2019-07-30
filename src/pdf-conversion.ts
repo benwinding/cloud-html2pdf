@@ -31,15 +31,13 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
   const { html, filename, imageResolution } = req.body;
 
   try {
-    console.log("pdf-generation: Begining pdf conversion");
+    console.log("pdf-generation: converting html to pdf");
     const tempPdfPath = join(tmpdir(), uuidv1() + ".pdf");
     await createPdf(html, tempPdfPath);
     const tempPdfCompressedPath = join(tmpdir(), uuidv1() + ".pdf");
-    console.log(
-      "pdf-generation: saving tempPdfPath  file: ",
-      tempPdfCompressedPath
-    );
+    console.log("pdf-generation: compressing pdf file", {tempPdfPath, tempPdfCompressedPath, imageResolution});
     await compressPdfFile(tempPdfPath, tempPdfCompressedPath, imageResolution);
+    console.log("pdf-generation: sending compressed pdf file...", {tempPdfPath, tempPdfCompressedPath, imageResolution});
     res.download(tempPdfCompressedPath, filename, async err => {
       if (err) {
         console.error("pdf-generation: error sending file:", err);
@@ -79,7 +77,7 @@ async function createPdf(html: string, outputPdfPath: string) {
   try {
     const puppeteer = require("puppeteer");
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"]
     });
     const page = await browser.newPage();
