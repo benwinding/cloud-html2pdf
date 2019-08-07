@@ -9,16 +9,19 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@types/puppeteer": "^1.19.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "puppeteer": "^1.19.0",
+    "sharp": "^0.23.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.4",
     "@types/express": "^4.16.0",
     "@types/node": "^11.9.6",
+    "@types/sharp": "^0.22.2",
     "@types/tmp": "^0.0.33",
     "@types/uuid": "^3.4.4",
     "concurrently": "^4.1.0",
