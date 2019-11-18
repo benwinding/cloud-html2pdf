@@ -2,4 +2,5 @@
 !lib
 !package.json
 !src
+!public
 !tsconfig.json

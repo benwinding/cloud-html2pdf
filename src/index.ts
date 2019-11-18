@@ -16,8 +16,12 @@ app.use(
 app.use(bodyParser.json());
 
 app.use(AddCors);
+app.use(function (req: Request, res, next) {
+  console.log('Time:', {url: req.url}, Date.now())
+  next()
+})
 
-app.use(express.static(path.join(__dirname, '../public')))
+app.use('/', express.static(path.join(__dirname, '../public')))
 app.use('/pdf/generate', Html2Pdf);
 app.use('/html/base64thumb', Html2JpegBase64Thumb);
 
