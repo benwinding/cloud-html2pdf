@@ -22,4 +22,4 @@ deploy:
 	make build
 	gcloud config set project resvuapps
 	gcloud builds submit --tag gcr.io/resvuapps/pdf1test
-	gcloud run deploy --image gcr.io/resvuapps/pdf1test --platform managed
+	gcloud run deploy --image gcr.io/resvuapps/pdf1test --platform managed --memory 2G

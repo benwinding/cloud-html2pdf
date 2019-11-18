@@ -2,6 +2,7 @@ import { Html2Pdf } from "./pdf-conversion";
 import { AddCors } from "./middleware";
 import { Html2JpegBase64Thumb } from './png-conversion';
 
+const path = require('path');
 const express = require('express');
 
 const app = express();
@@ -15,12 +16,12 @@ app.use(
 app.use(bodyParser.json());
 
 app.use(AddCors);
-app.get('/', async (req, res) => {
-  res.status(200).send('PDF CONVERTER RUNNING');
-});
+
+app.use(express.static(path.join(__dirname, '../public')))
 app.use('/pdf/generate', Html2Pdf);
 app.use('/html/base64thumb', Html2JpegBase64Thumb);
 
+// viewed at http://localhost:8080
 const server = app.listen(process.env.PORT || 8080, () => {
   const port = server.address().port;
   console.log(`App listening on port ${port}`);

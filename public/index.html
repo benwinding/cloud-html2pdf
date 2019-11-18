@@ -1,0 +1,43 @@
+<html>
+  <body>
+    <h2>HTML to PDF Generator</h2>
+    <textarea id="test-html"></textarea>
+    <button id="test-btn">Convert To PDF</button>
+  </body>
+
+  <script>
+    const btn = document.querySelector("#test-btn");
+    const htmlInput = document.querySelector("#test-html");
+    const cached = localStorage.getItem('test-html');
+    if (cached) {
+      htmlInput.value = cached;
+    } else {
+      htmlInput.value = '<h1>Test HTML</h1>';
+    }
+    btn.addEventListener("click", () => {
+      btn.setAttribute('disabled', true);
+      var request = new XMLHttpRequest();
+      request.open("POST", "./pdf/generate", true);
+      request.setRequestHeader(
+        "Content-Type",
+        "application/json; charset=UTF-8"
+      );
+      localStorage.setItem('test-html', htmlInput.value);
+      const body = {
+        html: htmlInput.value,
+        filename: "test.pdf"
+      };
+      request.responseType = "blob";
+      request.onload = function(event) {
+        var blob = request.response;
+        console.log(blob.size);
+        var link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = body.filename;
+        link.click();
+        btn.removeAttribute('disabled');
+      };
+      request.send(JSON.stringify(body));
+    });
+  </script>
+</html>

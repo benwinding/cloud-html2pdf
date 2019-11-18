@@ -35,9 +35,17 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
     const tempPdfPath = join(tmpdir(), uuidv1() + ".pdf");
     await createPdf(html, tempPdfPath);
     const tempPdfCompressedPath = join(tmpdir(), uuidv1() + ".pdf");
-    console.log("pdf-generation: compressing pdf file", {tempPdfPath, tempPdfCompressedPath, imageResolution});
+    console.log("pdf-generation: compressing pdf file", {
+      tempPdfPath,
+      tempPdfCompressedPath,
+      imageResolution
+    });
     await compressPdfFile(tempPdfPath, tempPdfCompressedPath, imageResolution);
-    console.log("pdf-generation: sending compressed pdf file...", {tempPdfPath, tempPdfCompressedPath, imageResolution});
+    console.log("pdf-generation: sending compressed pdf file...", {
+      tempPdfPath,
+      tempPdfCompressedPath,
+      imageResolution
+    });
     res.download(tempPdfCompressedPath, filename, async err => {
       if (err) {
         console.error("pdf-generation: error sending file:", err);
@@ -82,7 +90,16 @@ async function createPdf(html: string, outputPdfPath: string) {
     });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle2" });
-    await page.pdf({ path: outputPdfPath, format: "A4" });
+    await page.pdf({
+      path: outputPdfPath,
+      format: "A4",
+      margin: {
+        top: "10mm",
+        bottom: "10mm",
+        left: "10mm",
+        right: "10mm"
+      }
+    });
     await browser.close();
   } catch (error) {
     throw new Error(error);
