@@ -8,11 +8,15 @@ RUN apt-get install -y \
 RUN npm --version
 RUN node --version
 
-# install app
-RUN npm i -g yarn
-COPY ./package.json ./package.json
-RUN yarn --prod
+# Create and change to the app directory.
+WORKDIR /usr/src/app
+
+# Ensure local changes don't trigger npm install "every" time
+COPY ./package*.json ./
+# Install production dependencies.
+RUN npm install --only=production
+
 COPY . .
 
 # Begin xvfb server and start node script
-CMD node lib/index.js
+CMD ['npm', 'start']
