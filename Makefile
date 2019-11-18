@@ -7,7 +7,6 @@
 #
 
 build: 
-	yarn build
 	docker build . -t pdf1test
 
 run: 

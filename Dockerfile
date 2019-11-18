@@ -14,9 +14,10 @@ WORKDIR /usr/src/app
 # Ensure local changes don't trigger npm install "every" time
 COPY ./package*.json ./
 # Install production dependencies.
-RUN npm install --only=production
+RUN npm install
 
+# Copy and build project
 COPY . .
+Run npm run build
 
-# Begin xvfb server and start node script
-CMD ['npm', 'start']
+CMD npm run start
