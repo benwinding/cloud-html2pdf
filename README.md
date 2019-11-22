@@ -2,15 +2,15 @@
 This project contains the implementation for a HTTP endpoint which performs 2 useful functions involving the conversion of:
 
 [x] HTML string to PDF 
-[ ] HTML string to a thumbnail
+[x] HTML string to a thumbnail
 
 ## Using this
 Below are the access details for each API endpoint
 
-#### /html2pdf
+#### /pdf/generate
 
 ```
-POST "https://{HOST}/html2pdf"
+POST "https://{HOST}/pdf/generate"
 body = {
 	"html": "<html><div>Hello World</div></html>",
 	"filename": "hello_world.pdf",
@@ -18,10 +18,10 @@ body = {
 }
 ```
 
-#### /html2image (NOT IMPLEMENTED YET)
+#### /html/base64thumb (NOT IMPLEMENTED YET)
 
 ```
-POST "https://{HOST}/html2image"
+POST "https://{HOST}/html/base64thumb"
 body = {
 	"html": "<html><div>Hello World</div></html>",
 	"filename": "hello_world",
