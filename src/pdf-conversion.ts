@@ -6,7 +6,7 @@ import {
 import { Request, Response } from "express";
 import { tmpdir } from "os";
 import { join } from "path";
-import uuidv1 = require("uuid/v1");
+import uuidv4 = require("uuid/v4");
 const util = require("util");
 import * as fs from "fs";
 import { PdfRequest } from "./models";
@@ -34,20 +34,16 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
   let tempPdfPath: string, tempPdfCompressedPath: string;
   try {
     console.log("pdf-generation: converting html to pdf");
-    tempPdfPath = join(tmpdir(), uuidv1() + ".pdf");
+    tempPdfPath = join(tmpdir(), uuidv4() + ".pdf");
     await createPdf(html, tempPdfPath, noMargin);
-    tempPdfCompressedPath = join(tmpdir(), uuidv1() + ".pdf");
+    tempPdfCompressedPath = join(tmpdir(), uuidv4() + ".pdf");
     console.log("pdf-generation: compressing pdf file", {
       tempPdfPath,
       tempPdfCompressedPath,
       imageResolution
     });
     await compressPdfFile(tempPdfPath, tempPdfCompressedPath, imageResolution);
-    console.log("pdf-generation: sending compressed pdf file...", {
-      tempPdfPath,
-      tempPdfCompressedPath,
-      imageResolution
-    });
+    console.log("pdf-generation: sending compressed pdf file...");
     await new Promise((resolve, reject) =>
       res.download(tempPdfCompressedPath, filename, err => {
         if (err) {
@@ -95,7 +91,7 @@ async function createPdf(html: string, outputPdfPath: string, noMargin: boolean)
       ]
     });
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle2" });
+    await page.setContent(html, { waitUntil: "networkidle0" });
     const config = {
       path: outputPdfPath,
       format: "A4",
