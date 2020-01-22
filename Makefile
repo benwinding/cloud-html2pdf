@@ -13,7 +13,7 @@ run:
 	docker run -p 8080:8080 -it pdf1test
 
 enter: 
-	docker run -it pdf1test /bin/bash
+	docker run -p 8080:8080 -it pdf1test /bin/bash
 
 test: 
 	curl -X POST localhost:8080/pdf/generate -d "filename=test.pdf" -d "html=p" --output test.pdf
