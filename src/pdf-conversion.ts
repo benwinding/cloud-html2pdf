@@ -75,10 +75,14 @@ async function compressPdfFile(
   outputPdfFile: string,
   inputResolution: string
 ): Promise<void> {
-  const imageResolution = +inputResolution || 150;
-  const exec = util.promisify(require("child_process").exec);
-  const command = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -dColorImageResolution=${imageResolution} -q -o ${outputPdfFile} ${inputPdfPath}`;
-  await exec(command);
+  try {
+    const imageResolution = +inputResolution || 150;
+    const exec = util.promisify(require("child_process").exec);
+    const command = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -dColorImageResolution=${imageResolution} -q -o ${outputPdfFile} ${inputPdfPath}`;
+    await exec(command);
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 async function createPdf(html: string, outputPdfPath: string) {
@@ -86,7 +90,11 @@ async function createPdf(html: string, outputPdfPath: string) {
     const puppeteer = require("puppeteer");
     const browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage"
+      ]
     });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle2" });
