@@ -1,7 +1,7 @@
 import {
   OptionRequestsAreOk,
   PostRequestsOnly,
-  HasBodyProp
+  HasBodyProp,
 } from "./middleware";
 import { Request, Response } from "express";
 import { tmpdir } from "os";
@@ -17,49 +17,58 @@ export const Html2Pdf = [
   PostRequestsOnly,
   HasBodyProp("html"),
   HasBodyProp("filename"),
-  HandleHtml2Pdf
+  HandleHtml2Pdf,
 ];
 
 function tryRemoveFile(filePath) {
   console.log("pdf-generation: trying to remove file: ", filePath);
-  rmFilePromise(filePath).catch(e => {
+  rmFilePromise(filePath).catch((e) => {
     // console.error('error removing file: ', e)
   });
 }
 
 async function HandleHtml2Pdf(req: Request, res: Response) {
   // Get html string from query
-  const { html, filename, imageResolution, noMargin } = req.body as PdfRequest;
+  const body = req.body as PdfRequest;
+  const html = body.html;
+  delete body.html;
+
+  const config: PdfRequest = {
+    filename: "converted.pdf",
+    imageResolution: "150",
+    waitUntil: "networkidle2",
+    ...body, // overwrite with actual properties
+  };
 
   let tempPdfPath: string, tempPdfCompressedPath: string;
   try {
-    console.log("pdf-generation: converting html to pdf");
+    console.log("pdf-generation: converting html to pdf", { options: config });
     tempPdfPath = join(tmpdir(), uuidv1() + ".pdf");
-    await createPdf(html, tempPdfPath, noMargin);
+    await createPdf(html, tempPdfPath, config.noMargin, config.waitUntil);
     tempPdfCompressedPath = join(tmpdir(), uuidv1() + ".pdf");
     console.log("pdf-generation: compressing pdf file", {
       tempPdfPath,
       tempPdfCompressedPath,
-      imageResolution
+      imageResolution: config.imageResolution,
     });
-    await compressPdfFile(tempPdfPath, tempPdfCompressedPath, imageResolution);
+    await compressPdfFile(tempPdfPath, tempPdfCompressedPath, config.imageResolution);
     console.log("pdf-generation: sending compressed pdf file...", {
       tempPdfPath,
       tempPdfCompressedPath,
-      imageResolution
+      imageResolution: config.imageResolution,
     });
     await new Promise((resolve, reject) =>
-      res.download(tempPdfCompressedPath, filename, err => {
+      res.download(tempPdfCompressedPath, config.filename, (err) => {
         if (err) {
-          reject(err)
+          reject(err);
         } else {
-          resolve()
+          resolve();
         }
       })
     );
   } catch (e) {
     console.error("pdf-generation: An Error occurred when processing HTML", {
-      e
+      e,
     });
     res.status(500);
     res.send(e);
@@ -83,7 +92,12 @@ async function compressPdfFile(
   }
 }
 
-async function createPdf(html: string, outputPdfPath: string, noMargin: boolean) {
+async function createPdf(
+  html: string,
+  outputPdfPath: string,
+  noMargin: boolean,
+  waitUntil: string
+) {
   try {
     const puppeteer = require("puppeteer");
     const browser = await puppeteer.launch({
@@ -91,11 +105,11 @@ async function createPdf(html: string, outputPdfPath: string, noMargin: boolean)
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage"
-      ]
+        "--disable-dev-shm-usage",
+      ],
     });
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle2" });
+    await page.setContent(html, { waitUntil: waitUntil });
     const config = {
       path: outputPdfPath,
       format: "A4",
@@ -103,16 +117,16 @@ async function createPdf(html: string, outputPdfPath: string, noMargin: boolean)
         top: "10mm",
         bottom: "10mm",
         left: "10mm",
-        right: "10mm"
-      }
+        right: "10mm",
+      },
     };
     if (noMargin) {
       config.margin = {
         top: "0mm",
         bottom: "0mm",
         left: "0mm",
-        right: "0mm"
-      }
+        right: "0mm",
+      };
     }
     await page.pdf(config);
     await browser.close();
