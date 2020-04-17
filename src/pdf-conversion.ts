@@ -37,7 +37,7 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
   const config: PdfRequest = {
     filename: "converted.pdf",
     imageResolution: "150",
-    waitUntil: "networkidle2",
+    waitUntil: "networkidle0",
     ...body, // overwrite with actual properties
   };
 
