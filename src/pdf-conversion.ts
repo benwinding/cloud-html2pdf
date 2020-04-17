@@ -11,6 +11,7 @@ const util = require("util");
 import * as fs from "fs";
 import { PdfRequest } from "./models";
 const rmFilePromise = util.promisify(fs.unlink);
+import * as Pupeteer from 'puppeteer';
 
 export const Html2Pdf = [
   OptionRequestsAreOk,
@@ -96,21 +97,23 @@ async function createPdf(
   html: string,
   outputPdfPath: string,
   noMargin: boolean,
-  waitUntil: string
+  waitUntil: Pupeteer.LoadEvent
 ) {
   try {
-    const puppeteer = require("puppeteer");
-    const browser = await puppeteer.launch({
+    const browser = await Pupeteer.launch({
       headless: true,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
       ],
+      executablePath: '/usr/bin/google-chrome'
     });
+    const version = await browser.version()
+    console.log('createPdf using browser version: ' + version)
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: waitUntil });
-    const config = {
+    const config: Pupeteer.PDFOptions = {
       path: outputPdfPath,
       format: "A4",
       margin: {
