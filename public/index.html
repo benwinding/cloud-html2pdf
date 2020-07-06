@@ -1,19 +1,76 @@
 <html>
+  <head>
+    <style>
+      .container {
+        display: grid;
+        grid-template-columns: 50% 50%;
+      }
+      #test-html {
+        width: 100%;
+        height: 70vh;
+      }
+      #html-preview {
+        width: 100%;
+        height: 70vh;
+        overflow-y: auto;
+      }
+      button {
+        zoom: 1.5;
+      }
+    </style>
+
+  </head>
   <body>
-    <h2>HTML to PDF Generator</h2>
-    <textarea id="test-html"></textarea>
-    <button id="test-btn">Convert To PDF</button>
+    <center>
+      <h1>HTML to PDF Generator</h1>
+      <button id="btn-convert-to-pdf">Run Convert To PDF</button>
+    </center>
+    <div class="container">
+      <div>
+        <h2>HTML Input</h2>
+        <textarea id="test-html"></textarea>
+      </div>
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Rendered Output</h2>
+          <div>
+            <button id="btn-html-open">Open In New Tab ^</button>
+          </div>
+        </div>
+        <iframe id="html-preview"></iframe>
+      </div>
+    </div>
   </body>
 
   <script>
-    const btn = document.querySelector("#test-btn");
+    const btn = document.querySelector("#btn-convert-to-pdf");
+    const btnOpen = document.querySelector("#btn-html-open");
     const htmlInput = document.querySelector("#test-html");
+    const htmlOutput = document.querySelector("#html-preview");
     const cached = localStorage.getItem('test-html');
+    function setHTML(html_string) {
+      htmlOutput.src = "data:text/html;charset=utf-8," + escape(html_string);
+    }
+    btnOpen.addEventListener("click", () => {
+      const htmlDataUrl = htmlOutput.src.replace("data:text/html;charset=utf-8,", '');
+      var x = window.open();
+      x.document.open();
+      x.document.write(unescape(htmlDataUrl));
+      x.document.close();
+    })
+
+    htmlInput.addEventListener('input', () => {
+      console.log('htmlInput.onchange')
+      const value = htmlInput.value;
+      localStorage.setItem('test-html', htmlInput.value);
+      setHTML(value);
+    })
     if (cached) {
       htmlInput.value = cached;
     } else {
       htmlInput.value = '<h1>Test HTML</h1>';
     }
+    setHTML(htmlInput.value);
     btn.addEventListener("click", () => {
       btn.setAttribute('disabled', true);
       var request = new XMLHttpRequest();
@@ -22,10 +79,10 @@
         "Content-Type",
         "application/json; charset=UTF-8"
       );
-      localStorage.setItem('test-html', htmlInput.value);
       const body = {
         html: htmlInput.value,
-        filename: "test.pdf"
+        filename: "test.pdf",
+        waitUntil: 'networkidle0'
       };
       request.responseType = "blob";
       request.onload = function(event) {
