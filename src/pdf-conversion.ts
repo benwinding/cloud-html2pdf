@@ -114,6 +114,7 @@ async function createPdf(
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: waitUntil });
     const config: Pupeteer.PDFOptions = {
+      printBackground: true,
       path: outputPdfPath,
       format: "A4",
       margin: {
