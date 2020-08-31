@@ -26,7 +26,7 @@ async function HandleImgShrinkFromUrl(req: Request, res: Response) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.send(imageBufferResized);
   } catch (e) {
-    console.error("img-shrink: An Error occurred when processing HTML", {
+    console.error("img-shrink: An Error occurred when processing img", {
       e,
     });
     res.status(500);
