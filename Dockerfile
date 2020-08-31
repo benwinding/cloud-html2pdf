@@ -2,7 +2,7 @@
 # FROM buildkite/puppeteer
 
 #### Our edited base from (gets latest chrome)
-FROM node:10.15.3-slim@sha256:88da5cd281ece24309c4e6fcce000a8001b17804e19f94a0439954568716a668
+FROM node:10.18.1
     
 RUN  apt-get update \
      && apt-get install -y wget --no-install-recommends \

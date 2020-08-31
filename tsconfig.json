@@ -5,6 +5,8 @@
     "noImplicitReturns": true,
     "outDir": "lib",
     "sourceMap": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
     "target": "es2016",
     "plugins": [
       {

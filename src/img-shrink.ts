@@ -12,7 +12,7 @@ export const ImgShrinkFromUrl = [
 
 async function HandleImgShrinkFromUrl(req: Request, res: Response) {
   // Get html string from query
-  const { url, widthmax } = req.query;
+  const { url, widthmax } = req.query as any;
   try {
     console.log("img-shrink: reading image url");
     const imageBuffer = await imgUrl2ImageBuffer(url);
