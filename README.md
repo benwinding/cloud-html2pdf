@@ -2,7 +2,8 @@
 This project contains the implementation for a HTTP endpoint which performs 2 useful functions involving the conversion of:
 
 [x] HTML string to PDF 
-[x] HTML string to a thumbnail
+[x] HTML string to a thumbnail (base64)
+[x] img url string to an img (smaller)
 
 ## Using this
 Below are the access details for each API endpoint
@@ -18,7 +19,7 @@ body = {
 }
 ```
 
-#### /html/base64thumb (NOT IMPLEMENTED YET)
+#### /html/base64thumb
 
 ```
 POST "https://{HOST}/html/base64thumb"
@@ -28,6 +29,16 @@ body = {
 	"type": "png",
 	"width": "100",
 	"height": "100"
+}
+```
+
+#### /img/urlshrink
+
+```
+GET "https://{HOST}/img/urlshrink"
+query = {
+	"url": "https://example.com/image.png",
+	"widthmax": 500
 }
 ```
 

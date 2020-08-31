@@ -56,6 +56,19 @@ export function HasBodyProp(bodyFieldName: string): RequestHandler {
   };
 }
 
+export function HasQuery(queryParamName: string): RequestHandler {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.query[queryParamName]) {
+      const msg = `Request is missing "${queryParamName}" in req.query
+-> Recieved req.query: ${getSafeJson(req.query)}`;
+      console.warn(msg);
+      res.status(400).send(msg);
+      return;
+    }
+    next();
+  };
+}
+
 function getSafeJson(body) {
   try {
     const str = JSON.stringify(body, null, 2);

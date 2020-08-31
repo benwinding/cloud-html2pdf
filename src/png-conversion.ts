@@ -18,18 +18,18 @@ async function HandleHtml2JpegBase64(req: Request, res: Response) {
   // Get html string from query
   const { html } = req.body;
   try {
-    console.log("pdf-generation: converting html to image");
+    console.log("png-generation: converting html to image");
     const w = (210 * 4).toString();
     const h = (297 * 4).toString();
     const imageBuffer = await html2ImageBuffer(html, w, h);
-    console.log("pdf-generation: converting resizing image");
+    console.log("png-generation: converting resizing image");
     const imageBufferResized = await resizeImageBuffer(imageBuffer);
     const imageBase64 = Buffer.from(imageBufferResized).toString("base64");
-    console.log("pdf-generation: converting done");
+    console.log("png-generation: converting done");
     res.status(200);
     res.send(imageBase64);
   } catch (e) {
-    console.error("pdf-generation: An Error occurred when processing HTML", {
+    console.error("png-generation: An Error occurred when processing HTML", {
       e
     });
     res.status(500);

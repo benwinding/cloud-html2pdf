@@ -3,25 +3,27 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "build": "tsc --project tsconfig.json",
-    "watch": "concurrently --kill-others \"tsc -w\" \"nodemon lib/index.js\"",
+    "watch": "tsc -w --project tsconfig.json",
     "start": "node lib/index.js",
     "deploy": "yarn build && heroku container:login && "
   },
   "main": "lib/index.js",
   "dependencies": {
+    "axios": "^0.20.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "puppeteer": "^2.0.0",
-    "sharp": "^0.23.0",
+    "sharp": "^0.26.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/cors": "^2.8.4",
     "@types/express": "^4.16.0",
     "@types/node": "^11.9.6",
     "@types/puppeteer": "^1.20.0",
-    "@types/sharp": "^0.22.2",
+    "@types/sharp": "^0.25.1",
     "@types/tmp": "^0.0.33",
     "@types/uuid": "^3.4.4",
     "concurrently": "^4.1.0",

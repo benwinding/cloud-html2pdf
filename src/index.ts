@@ -1,6 +1,7 @@
-import { Html2Pdf } from "./pdf-conversion";
 import { AddCors } from "./middleware";
+import { Html2Pdf } from "./pdf-conversion";
 import { Html2JpegBase64Thumb } from './png-conversion';
+import { ImgShrinkFromUrl } from "./img-shrink";
 
 const path = require('path');
 const express = require('express');
@@ -24,6 +25,7 @@ app.use(function (req: Request, res, next) {
 app.use('/', express.static(path.join(__dirname, '../public')))
 app.use('/pdf/generate', Html2Pdf);
 app.use('/html/base64thumb', Html2JpegBase64Thumb);
+app.use('/img/urlshrink', ImgShrinkFromUrl);
 
 // viewed at http://localhost:8080
 const server = app.listen(process.env.PORT || 8080, () => {

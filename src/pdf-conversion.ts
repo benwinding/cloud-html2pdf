@@ -22,7 +22,7 @@ export const Html2Pdf = [
 ];
 
 function tryRemoveFile(filePath) {
-  console.log("pdf-generation: trying to remove file: ", filePath);
+  console.log("pdf-conversion: trying to remove file: ", filePath);
   rmFilePromise(filePath).catch((e) => {
     // console.error('error removing file: ', e)
   });
@@ -43,17 +43,17 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
 
   let tempPdfPath: string, tempPdfCompressedPath: string;
   try {
-    console.log("pdf-generation: converting html to pdf", { options: config });
+    console.log("pdf-conversion: converting html to pdf", { options: config });
     tempPdfPath = join(tmpdir(), uuidv4() + ".pdf");
     await createPdf(html, tempPdfPath, config.noMargin, config.waitUntil);
     tempPdfCompressedPath = join(tmpdir(), uuidv4() + ".pdf");
-    console.log("pdf-generation: compressing pdf file", {
+    console.log("pdf-conversion: compressing pdf file", {
       tempPdfPath,
       tempPdfCompressedPath,
       imageResolution: config.imageResolution,
     });
     await compressPdfFile(tempPdfPath, tempPdfCompressedPath, config.imageResolution);
-    console.log("pdf-generation: sending compressed pdf file...", {
+    console.log("pdf-conversion: sending compressed pdf file...", {
       tempPdfPath,
       tempPdfCompressedPath,
       imageResolution: config.imageResolution,
@@ -68,7 +68,7 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
       })
     );
   } catch (e) {
-    console.error("pdf-generation: An Error occurred when processing HTML", {
+    console.error("pdf-conversion: An Error occurred when processing HTML", {
       e,
     });
     res.status(500);
