@@ -25,6 +25,7 @@ WORKDIR /usr/src/app
 COPY ./package*.json ./
 # Install production dependencies.
 RUN npm install
+RUN apt-get install -y libxss1 
 
 # Copy and build project
 COPY . .
