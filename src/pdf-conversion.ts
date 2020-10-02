@@ -113,6 +113,25 @@ async function createPdf(
     console.log('createPdf using browser version: ' + version)
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: waitUntil });
+    const footerFormat = 
+    `
+    <style type="text/css">
+    .pdfheader {
+      font-size: 10px;
+      font-family: 'Raleway';
+      font-weight: bold;
+      width: 1000px;
+      text-align: center;
+      color: grey;
+      padding-left: 10px;
+    }
+    </style>
+    
+    <div class="pdfheader">
+      <span>Page </span>
+      <span class="pageNumber"></span> / <span class="totalPages"></span>
+    </div>
+    `;
     const config: Pupeteer.PDFOptions = {
       printBackground: true,
       path: outputPdfPath,
@@ -123,6 +142,9 @@ async function createPdf(
         left: "10mm",
         right: "10mm",
       },
+      displayHeaderFooter: true,
+      headerTemplate : '<div></div>',
+      footerTemplate:footerFormat,
     };
     if (noMargin) {
       config.margin = {
