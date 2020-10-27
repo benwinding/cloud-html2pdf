@@ -1,0 +1,20 @@
+name: Deploy
+
+on: 
+  push: 
+    branches: master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Deploy using gcloud cli
+      uses: actions-hub/gcloud@271.0.0
+      env:
+        PROJECT_ID: resvuapps
+        APPLICATION_CREDENTIALS: ${{secrets.GCP_CREDENTIALS}}
+      with:
+        args: run deploy pdf2test --image gcr.io/resvuapps/pdf2test --platform managed --memory 2G --region asia-northeast1 --concurrency 2
