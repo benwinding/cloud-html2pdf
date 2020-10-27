@@ -11,10 +11,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Deploy using gcloud cli
-      uses: actions-hub/gcloud@271.0.0
-      env:
-        PROJECT_ID: resvuapps
-        APPLICATION_CREDENTIALS: ${{secrets.GCP_CREDENTIALS}}
+
+    # Setup gcloud CLI
+    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
-        args: run deploy pdf2test --image gcr.io/resvuapps/pdf2test --platform managed --memory 2G --region asia-northeast1 --concurrency 2
+        version: '290.0.1'
+        service_account_key: ${{secrets.GCP_CREDENTIALS}}
+        project_id: resvuapps
+
+    # Build and push image to Google Container Registry
+    - name: Build
+      run: |-
+        gcloud builds submit \
+          --quiet \
+          --tag gcr.io/resvuapps/pdf1test
+
+    # Deploy image to Cloud Run
+    - name: Deploy
+      run: |-
+        gcloud run deploy pdf2test \
+          --quiet \
+          --region asia-northeast1 \
+          --image gcr.io/resvuapps/pdf2test \
+          --platform "managed" \
+          --memory 2G \
+          --concurrency 2 \
+          --allow-unauthenticated 
+          
