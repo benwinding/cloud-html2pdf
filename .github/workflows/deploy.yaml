@@ -24,15 +24,15 @@ jobs:
       run: |-
         gcloud builds submit \
           --quiet \
-          --tag gcr.io/resvuapps/pdf2test
+          --tag gcr.io/resvuapps/pdf1test
 
     # Deploy image to Cloud Run
     - name: Deploy
       run: |-
-        gcloud run deploy pdf2test \
+        gcloud run deploy pdf1test \
           --quiet \
           --region asia-northeast1 \
-          --image gcr.io/resvuapps/pdf2test \
+          --image gcr.io/resvuapps/pdf1test \
           --platform "managed" \
           --memory 2G \
           --concurrency 2 \
