@@ -18,15 +18,14 @@
         zoom: 1.5;
       }
     </style>
-
   </head>
   <body>
     <center>
       <h1>HTML to PDF Generator</h1>
       <div>
         <button id="btn-convert-to-pdf">Run Convert To PDF</button>
-        <button id="btn-convert-to-png">Run Convert To PNG</button>
-        <img id="png-thumbnail" src="" height="80px" alt="some text">      
+        <button id="btn-convert-to-png">Run Convert To PNG -></button>
+        <img id="png-thumbnail" src="" style="border: 2px black dashed;" height="80px" alt="some text">      
       </div>
     </center>
     <div class="container">
@@ -36,7 +35,7 @@
       </div>
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2>Rendered Output</h2>
+          <h2>Rendered Output (iframe)</h2>
           <div>
             <button id="btn-html-open">Open In New Tab ^</button>
           </div>
@@ -55,7 +54,7 @@
     const imgThumb = document.querySelector("#png-thumbnail");
     const cached = localStorage.getItem('test-html');
 
-    const imgThumbPlaceholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC'
+    const imgThumbPlaceholder = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
     imgThumb.src = imgThumbPlaceholder;
     function setHTML(html_string) {
       htmlOutput.src = "data:text/html;charset=utf-8," + escape(html_string);
@@ -80,30 +79,34 @@
       htmlInput.value = '<h1>Test HTML</h1>';
     }
     setHTML(htmlInput.value);
-    btnPdf.addEventListener("click", () => {
-      btnPdf.setAttribute('disabled', true);
-      var request = new XMLHttpRequest();
-      request.open("POST", "./pdf/generate", true);
-      request.setRequestHeader(
-        "Content-Type",
-        "application/json; charset=UTF-8"
-      );
+
+    function getPdfFromServer() {
       const body = {
         html: htmlInput.value,
         filename: "test.pdf",
         waitUntil: 'networkidle0'
       };
-      request.responseType = "blob";
-      request.onload = function(event) {
-        var blob = request.response;
+      return fetch("./pdf/generate", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+      })
+    }
+
+    btnPdf.addEventListener("click", () => {
+      btnPdf.setAttribute('disabled', true);
+      getPdfFromServer()
+      .then((res) => res.blob())
+      .then((blob) => {
         console.log(blob.size);
         var link = document.createElement("a");
         link.href = window.URL.createObjectURL(blob);
-        link.download = body.filename;
+        link.download = "test.pdf";
         link.click();
         btnPdf.removeAttribute('disabled');
-      };
-      request.send(JSON.stringify(body));
+      })
     });
     btnPng.addEventListener("click", () => {
       btnPng.setAttribute('disabled', true);
