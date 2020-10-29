@@ -20,7 +20,7 @@
         zoom: 1.5;
       }
     </style>
-  </head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>  </head>
   <body>
     <center>
       <h1>HTML to PDF Generator</h1>
@@ -48,6 +48,35 @@
     const btnPdfViewUpdate = document.querySelector("#btn-pdf-update");
     const htmlOutput = document.querySelector("#pdf-viewer");
     const htmlInput = document.querySelector("#test-html");
+    const cachedKey = 'test-html-reload-pdf'
+    const cached = localStorage.getItem(cachedKey);
+
+    function onTriggerRefresh() {
+      console.log('triggerRefresh');
+      btnPdfViewUpdate.setAttribute('disabled', true);
+      getPdfFromServer()
+      .then((res) => res.blob())
+      .then((blob) => {
+        console.log(blob.size);
+        const pdfBlobUrl = window.URL.createObjectURL(blob);
+        setPdfPreviewUrl(pdfBlobUrl);
+        btnPdfViewUpdate.removeAttribute('disabled');
+      })
+    }
+    const triggerRefresh = _.throttle(onTriggerRefresh, 4000, false);
+
+    htmlInput.addEventListener('input', function () {
+      console.log('htmlInput.onchange')
+      localStorage.setItem(cachedKey, htmlInput.innerHTML);
+      triggerRefresh();
+    })
+
+    if (cached) {
+      htmlInput.innerHTML = cached;
+    } else {
+      htmlInput.innerHTML = '<h1>Test HTML</h1>';
+    }
+    triggerRefresh();
 
     const currentSite = document.location.origin;
     var currentUrl;
@@ -74,19 +103,7 @@
     }
 
     btnPdfViewUpdate.addEventListener("click", () => {
-      btnPdfViewUpdate.setAttribute('disabled', true);
-      getPdfFromServer()
-      .then((res) => res.blob())
-      .then((blob) => {
-        console.log(blob.size);
-        const pdfBlobUrl = window.URL.createObjectURL(blob);
-        setPdfPreviewUrl(pdfBlobUrl);
-        var link = document.createElement("a");
-        link.href = pdfBlobUrl;
-        link.download = "test.pdf";
-        link.click();
-        btnPdfViewUpdate.removeAttribute('disabled');
-      })
+      triggerRefresh()
     });
 
   </script>
