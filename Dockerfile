@@ -24,6 +24,7 @@ WORKDIR /usr/src/app
 # Ensure local changes don't trigger npm install "every" time
 COPY ./package*.json ./
 # Install production dependencies.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 RUN npm install
 RUN apt-get install -y libxss1 
 

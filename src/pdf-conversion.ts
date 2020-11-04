@@ -12,6 +12,7 @@ import * as fs from "fs";
 import { PdfRequest } from "./models";
 const rmFilePromise = util.promisify(fs.unlink);
 import * as Pupeteer from 'puppeteer';
+import { launchChromeInstance } from "./browser-helper";
 
 export const Html2Pdf = [
   OptionRequestsAreOk,
@@ -100,15 +101,7 @@ async function createPdf(
   waitUntil: Pupeteer.LoadEvent
 ) {
   try {
-    const browser = await Pupeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-      ],
-      executablePath: '/usr/bin/google-chrome'
-    });
+    const browser = await launchChromeInstance();
     const version = await browser.version()
     console.log('createPdf using browser version: ' + version)
     const page = await browser.newPage();

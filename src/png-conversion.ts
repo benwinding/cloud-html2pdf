@@ -4,8 +4,8 @@ import {
   HasBodyProp
 } from "./middleware";
 import { Request, Response } from "express";
-import { launch } from "puppeteer";
 import * as sharp from "sharp";
+import { launchChromeInstance } from "./browser-helper";
 
 export const Html2JpegBase64Thumb = [
   OptionRequestsAreOk,
@@ -48,10 +48,7 @@ async function resizeImageBuffer(imgBuffer): Promise<Buffer> {
 
 async function html2ImageBuffer(html: string, width: string, height: string) {
   try {
-    const browser = await launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"]
-    });
+    const browser = await launchChromeInstance();
     const page = await browser.newPage();
     await page.setViewport({
       width: Math.round(+width),
