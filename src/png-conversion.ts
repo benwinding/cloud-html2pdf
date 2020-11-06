@@ -37,7 +37,7 @@ async function HandleHtml2JpegBase64(req: Request, res: Response) {
   }
 }
 
-async function resizeImageBuffer(imgBuffer): Promise<Buffer> {
+async function resizeImageBuffer(imgBuffer: Buffer): Promise<Buffer> {
   const w = Math.round(210*1.5);
   const h = Math.round(297*1.5);
   const data = await sharp(imgBuffer)
