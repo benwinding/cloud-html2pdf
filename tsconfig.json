@@ -3,6 +3,7 @@
     "lib": ["es2016", "dom"],
     "module": "commonjs",
     "noImplicitReturns": true,
+    "noImplicitAny": true,
     "outDir": "lib",
     "sourceMap": true,
     "skipDefaultLibCheck": true,
@@ -13,7 +14,8 @@
         "transform": "typescript-is/lib/transform-inline/transformer"
       }
     ],
-    "allowJs": true
+    "allowJs": true,
+    "strict": true
   },
   "compileOnSave": true,
   "include": ["src"],

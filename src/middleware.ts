@@ -69,7 +69,7 @@ export function HasQuery(queryParamName: string): RequestHandler {
   };
 }
 
-function getSafeJson(body) {
+function getSafeJson(body: any) {
   try {
     const str = JSON.stringify(body, null, 2);
     return str.slice(0,200);

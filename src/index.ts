@@ -17,7 +17,7 @@ app.use(
 app.use(bodyParser.json());
 
 app.use(AddCors);
-app.use(function (req: Request, res, next) {
+app.use(function (req: Request, res: any, next: () => void) {
   console.log('Time:', {url: req.url}, Date.now())
   next()
 })

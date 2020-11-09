@@ -4,15 +4,12 @@ import {
   HasBodyProp,
 } from "./middleware";
 import { Request, Response } from "express";
-import { tmpdir } from "os";
-import { join } from "path";
-import uuidv4 = require("uuid/v4");
-const util = require("util");
-import * as fs from "fs";
 import { PdfRequest } from "./models";
-const rmFilePromise = util.promisify(fs.unlink);
 import * as Pupeteer from 'puppeteer';
 import { launchChromeInstance } from "./browser-helper";
+import { addPdfsFromUrls } from "./pdf-fetch";
+import { generateTempPdfPath, tryRemoveFile, tryRemoveFiles } from "./fs-helper";
+const util = require("util");
 
 export const Html2Pdf = [
   OptionRequestsAreOk,
@@ -22,38 +19,40 @@ export const Html2Pdf = [
   HandleHtml2Pdf,
 ];
 
-function tryRemoveFile(filePath) {
-  console.log("pdf-conversion: trying to remove file: ", filePath);
-  rmFilePromise(filePath).catch((e) => {
-    // console.error('error removing file: ', e)
-  });
+function GetConfig(b: PdfRequest): PdfRequest {
+  return {
+    html: b.html, 
+    filename: b.filename || "converted.pdf", 
+    imageResolution: b.imageResolution || "150", 
+    noMargin: b.noMargin, 
+    pdf_urls_prepend: b.pdf_urls_prepend, 
+    pdf_urls_append: b.pdf_urls_append, 
+    waitUntil: b.waitUntil || "networkidle0",
+  }
 }
 
 async function HandleHtml2Pdf(req: Request, res: Response) {
   // Get html string from query
   const body = req.body as PdfRequest;
   const html = body.html;
-  delete body.html;
 
-  const config: PdfRequest = {
-    filename: "converted.pdf",
-    imageResolution: "150",
-    waitUntil: "networkidle0",
-    ...body, // overwrite with actual properties
-  };
+  const config = GetConfig(body);
 
-  let tempPdfPath: string, tempPdfCompressedPath: string;
+  let tempPdfPath = '';
+  let tempPdfCompressedPath = '';
+  let tempPdfsToJoinArray = [''];
   try {
     console.log("pdf-conversion: converting html to pdf", { options: config });
-    tempPdfPath = join(tmpdir(), uuidv4() + ".pdf");
+    tempPdfPath = generateTempPdfPath();
     await createPdf(html, tempPdfPath, config.noMargin, config.waitUntil);
-    tempPdfCompressedPath = join(tmpdir(), uuidv4() + ".pdf");
+    tempPdfCompressedPath = generateTempPdfPath();
     console.log("pdf-conversion: compressing pdf file", {
       tempPdfPath,
       tempPdfCompressedPath,
       imageResolution: config.imageResolution,
     });
-    await compressPdfFile(tempPdfPath, tempPdfCompressedPath, config.imageResolution);
+    tempPdfsToJoinArray = await addPdfsFromUrls(tempPdfPath, config.pdf_urls_prepend, config.pdf_urls_append);
+    await compressPdfFile(tempPdfsToJoinArray, tempPdfCompressedPath, config.imageResolution);
     console.log("pdf-conversion: sending compressed pdf file...", {
       tempPdfPath,
       tempPdfCompressedPath,
@@ -77,17 +76,20 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
   }
   tryRemoveFile(tempPdfPath);
   tryRemoveFile(tempPdfCompressedPath);
+  tryRemoveFiles(...tempPdfsToJoinArray);
 }
 
 async function compressPdfFile(
-  inputPdfPath: string,
+  inputPdfPaths: string[],
   outputPdfFile: string,
-  inputResolution: string
+  inputResolution: string | undefined
 ): Promise<void> {
   try {
-    const imageResolution = +inputResolution || 150;
+    const inputImageRes = +(inputResolution + '');
+    const imageResolution = Number.isFinite(inputImageRes) ? inputImageRes : 150;
     const exec = util.promisify(require("child_process").exec);
-    const command = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -dColorImageResolution=${imageResolution} -q -o ${outputPdfFile} ${inputPdfPath}`;
+    const inputPdfPathsJoined = inputPdfPaths.join(' ');
+    const command = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -dColorImageResolution=${imageResolution} -q -o ${outputPdfFile} ${inputPdfPathsJoined}`;
     await exec(command);
   } catch (error) {
     throw new Error(error);
@@ -97,8 +99,8 @@ async function compressPdfFile(
 async function createPdf(
   html: string,
   outputPdfPath: string,
-  noMargin: boolean,
-  waitUntil: Pupeteer.LoadEvent
+  noMargin: boolean | undefined,
+  waitUntil: Pupeteer.LoadEvent | undefined
 ) {
   try {
     const browser = await launchChromeInstance();
