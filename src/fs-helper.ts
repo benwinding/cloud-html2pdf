@@ -18,3 +18,4 @@ export async function tryRemoveFiles(...filePaths: string[] ) {
 }
 
 export function generateTempPdfPath() { return join(tmpdir(), uuidv4() + ".pdf"); }
+export function generateTempJpegPath() { return join(tmpdir(), uuidv4() + ".jpeg"); }

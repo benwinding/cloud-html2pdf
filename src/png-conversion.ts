@@ -4,8 +4,7 @@ import {
   HasBodyProp
 } from "./middleware";
 import { Request, Response } from "express";
-import * as sharp from "sharp";
-import { launchChromeInstance } from "./browser-helper";
+import { html2ImageBuffer, pdfUrl2ImageBuffer, resizeImageBuffer } from "./thumnail-conversion";
 
 export const Html2JpegBase64Thumb = [
   OptionRequestsAreOk,
@@ -37,28 +36,26 @@ async function HandleHtml2JpegBase64(req: Request, res: Response) {
   }
 }
 
-async function resizeImageBuffer(imgBuffer: Buffer): Promise<Buffer> {
-  const w = Math.round(210*1.5);
-  const h = Math.round(297*1.5);
-  const data = await sharp(imgBuffer)
-    .resize(w, h)
-    .toBuffer();
-  return data;
+export const PDFUrlToBase64Thumb = [
+  OptionRequestsAreOk,
+  PostRequestsOnly,
+  HasBodyProp("pdfUrl"),
+  HandlePdfUrl2JpegBase64
+]
+
+async function HandlePdfUrl2JpegBase64(req: Request, res: Response) {
+  const body = req.body;
+  const pdfUrl = body.pdfUrl;
+  console.log("png-generation: converting html to image");
+  const w = (210 * 4);
+  const h = (297 * 4);
+  const imageBuffer = await pdfUrl2ImageBuffer(pdfUrl, w, h);
+  console.log("png-generation: converting resizing image");
+  const imageBufferResized = await resizeImageBuffer(imageBuffer);
+  const imageBase64 = Buffer.from(imageBufferResized).toString("base64");
+  console.log("png-generation: converting done");
+  res.status(200);
+  res.send(imageBase64);
 }
 
-async function html2ImageBuffer(html: string, width: string, height: string) {
-  try {
-    const browser = await launchChromeInstance();
-    const page = await browser.newPage();
-    await page.setViewport({
-      width: Math.round(+width),
-      height: Math.round(+height)
-    });
-    await page.setContent(html, { waitUntil: "networkidle2" });
-    const buffer = await page.screenshot({ type: "jpeg", encoding: "binary" });
-    await browser.close();
-    return buffer;
-  } catch (error) {
-    throw new Error(error);
-  }
-}
+

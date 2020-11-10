@@ -35,7 +35,7 @@ async function getPdfFilePaths(pdfUrls: string[] | undefined): Promise<string[]>
   return pdfFilePaths.filter(f => !!f);
 }
 
-async function savePdfUrlToDisk(pdfUrl: string, saveToPath: string): Promise<void> {
+export async function savePdfUrlToDisk(pdfUrl: string, saveToPath: string): Promise<void> {
   const response = await axios({
     method: "get",
     url: pdfUrl,

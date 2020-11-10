@@ -9,7 +9,7 @@ import * as Pupeteer from 'puppeteer';
 import { launchChromeInstance } from "./browser-helper";
 import { addPdfsFromUrls } from "./pdf-fetch";
 import { generateTempPdfPath, tryRemoveFile, tryRemoveFiles } from "./fs-helper";
-const util = require("util");
+import { compressPdfFile } from "./pdf-helpers";
 
 export const Html2Pdf = [
   OptionRequestsAreOk,
@@ -77,23 +77,6 @@ async function HandleHtml2Pdf(req: Request, res: Response) {
   tryRemoveFile(tempPdfPath);
   tryRemoveFile(tempPdfCompressedPath);
   tryRemoveFiles(...tempPdfsToJoinArray);
-}
-
-async function compressPdfFile(
-  inputPdfPaths: string[],
-  outputPdfFile: string,
-  inputResolution: string | undefined
-): Promise<void> {
-  try {
-    const inputImageRes = +(inputResolution + '');
-    const imageResolution = Number.isFinite(inputImageRes) ? inputImageRes : 150;
-    const exec = util.promisify(require("child_process").exec);
-    const inputPdfPathsJoined = inputPdfPaths.join(' ');
-    const command = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -dColorImageResolution=${imageResolution} -q -o ${outputPdfFile} ${inputPdfPathsJoined}`;
-    await exec(command);
-  } catch (error) {
-    throw new Error(error);
-  }
 }
 
 async function createPdf(
