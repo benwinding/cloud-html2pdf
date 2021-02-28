@@ -1,9 +1,9 @@
 # Resvu - Html2Pdf API
 This project contains the implementation for a HTTP endpoint which performs 2 useful functions involving the conversion of:
 
-[x] HTML string to PDF 
-[x] HTML string to a thumbnail (base64)
-[x] img url string to an img (smaller)
+- [x] HTML string to PDF 
+- [x] HTML string to a thumbnail (base64)
+- [x] img url string to an img (smaller)
 
 ## Using this
 Below are the access details for each API endpoint
