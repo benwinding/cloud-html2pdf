@@ -2,10 +2,8 @@
   "name": "cloud-html2pdf",
   "options": {
     "allow-unauthenticated": true,
-    "concurrency": "2",
     "memory": "2G",
-    "cpu": "1",
-    "platform": "managed",
+    "cpu": "2",
     "http2": false
   }
 }
