@@ -5,6 +5,8 @@ This project contains the implementation for a HTTP endpoint which performs 2 us
 - [x] HTML string to a thumbnail (base64)
 - [x] img url string to an img (smaller)
 
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run/?git_repo=https://github.com/benwinding/cloud-html2pdf.git)
+
 ## Using this
 Below are the access details for each API endpoint
 
