@@ -40,6 +40,7 @@ async function resizeImageBuffer(
 ): Promise<Buffer> {
   const data = await sharp(imgBuffer)
     .resize({ width: widthmax, withoutEnlargement: false })
+    .withMetadata()
     .jpeg()
     .toBuffer();
   return data;
