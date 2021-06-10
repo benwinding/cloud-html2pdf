@@ -20,10 +20,10 @@ async function HandleImgShrinkFromUrl(req: Request, res: Response) {
     const imageBufferResized = await resizeImageBuffer(imageBuffer, +widthmax);
     console.log("img-shrink: converting done");
     res.status(200);
-    res.contentType('image/jpeg');
-    res.removeHeader('Access-Control-Allow-Headers')
-    res.setHeader('Accept-Ranges', 'bytes');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.contentType("image/jpeg");
+    res.removeHeader("Access-Control-Allow-Headers");
+    res.setHeader("Accept-Ranges", "bytes");
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
     res.send(imageBufferResized);
   } catch (e) {
     console.error("img-shrink: An Error occurred when processing img", {
@@ -40,6 +40,7 @@ async function resizeImageBuffer(
 ): Promise<Buffer> {
   const data = await sharp(imgBuffer)
     .resize({ width: widthmax, withoutEnlargement: false })
+    .withMetadata()
     .jpeg()
     .toBuffer();
   return data;
